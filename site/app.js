@@ -1,10 +1,13 @@
 const state = {
   units: [],
+  baseUnits: [],
   documents: new Map(),
   references: {},
   uploads: {},
   activeFilter: "all",
+  activeFieldId: null,
   activeId: null,
+  expandedIds: new Set(),
   activeView: "analysis",
   query: "",
   lastGptResult: ""
@@ -22,7 +25,7 @@ const levelOrder = {
 
 const fallbackManifest = {
   project: {
-    title: "중소기업 전략기술로드맵 AI Agent - 반도체 분야",
+    title: "중소기업 전략기술로드맵 AI Agent - 반도체·디스플레이 분야",
     subtitle: "분석 단위별 Markdown 기반 로드맵 작성 워크스페이스",
     version: "1.0.0",
     lastUpdated: "2026-05-20"
@@ -30,7 +33,121 @@ const fallbackManifest = {
   analysisUnits: []
 };
 
+const strategyFields = [
+  {
+    id: "ai",
+    label: "AI",
+    title: "중소기업 전략기술로드맵 AI Agent - AI 분야",
+    subtitle: "AI 모델, 데이터, 응용서비스 기반 전략품목 로드맵",
+    accent: "#2563eb",
+    keywords: ["생성형 AI", "AI 반도체", "데이터", "SaaS"]
+  },
+  {
+    id: "bio-medical",
+    label: "바이오·의료",
+    title: "중소기업 전략기술로드맵 AI Agent - 바이오·의료 분야",
+    subtitle: "바이오헬스, 의료기기, 디지털 치료제 전략 로드맵",
+    accent: "#0f766e",
+    keywords: ["의료기기", "진단", "디지털헬스", "신약"]
+  },
+  {
+    id: "semiconductor-display",
+    label: "반도체·디스플레이",
+    title: "중소기업 전략기술로드맵 AI Agent - 반도체·디스플레이 분야",
+    subtitle: "분석 단위별 Markdown 기반 로드맵 작성 워크스페이스",
+    accent: "#7c3aed",
+    keywords: ["첨단패키징", "전력반도체", "디스플레이", "소부장"],
+    usesManifest: true
+  },
+  {
+    id: "next-communication",
+    label: "차세대통신",
+    title: "중소기업 전략기술로드맵 AI Agent - 차세대통신 분야",
+    subtitle: "5G-Advanced, 6G, 네트워크 장비·서비스 전략 로드맵",
+    accent: "#0369a1",
+    keywords: ["6G", "오픈랜", "위성통신", "네트워크"]
+  },
+  {
+    id: "advanced-materials",
+    label: "첨단소재",
+    title: "중소기업 전략기술로드맵 AI Agent - 첨단소재 분야",
+    subtitle: "고기능 소재, 공급망, 소부장 자립화 전략 로드맵",
+    accent: "#b45309",
+    keywords: ["소재", "나노", "탄소", "세라믹"]
+  },
+  {
+    id: "advanced-manufacturing",
+    label: "첨단제조",
+    title: "중소기업 전략기술로드맵 AI Agent - 첨단제조 분야",
+    subtitle: "스마트공장, 공정혁신, 제조 AI 전략 로드맵",
+    accent: "#4d7c0f",
+    keywords: ["스마트공장", "공정", "디지털트윈", "검사"]
+  },
+  {
+    id: "robot",
+    label: "로봇",
+    title: "중소기업 전략기술로드맵 AI Agent - 로봇 분야",
+    subtitle: "산업·서비스 로봇과 핵심부품 전략 로드맵",
+    accent: "#0e7490",
+    keywords: ["산업로봇", "서비스로봇", "AMR", "그리퍼"]
+  },
+  {
+    id: "advanced-mobility",
+    label: "첨단모빌리티",
+    title: "중소기업 전략기술로드맵 AI Agent - 첨단모빌리티 분야",
+    subtitle: "자율주행, 전동화, 미래 이동서비스 전략 로드맵",
+    accent: "#be123c",
+    keywords: ["자율주행", "전장", "UAM", "센서"]
+  },
+  {
+    id: "climate-energy",
+    label: "기후·에너지",
+    title: "중소기업 전략기술로드맵 AI Agent - 기후·에너지 분야",
+    subtitle: "탄소중립, 재생에너지, 에너지 효율 전략 로드맵",
+    accent: "#15803d",
+    keywords: ["탄소중립", "수소", "재생에너지", "효율"]
+  },
+  {
+    id: "secondary-battery",
+    label: "이차전지",
+    title: "중소기업 전략기술로드맵 AI Agent - 이차전지 분야",
+    subtitle: "배터리 소재, 셀·팩, 재사용·재활용 전략 로드맵",
+    accent: "#ca8a04",
+    keywords: ["전극소재", "BMS", "전고체", "재활용"]
+  },
+  {
+    id: "cyber-security",
+    label: "사이버보안",
+    title: "중소기업 전략기술로드맵 AI Agent - 사이버보안 분야",
+    subtitle: "제로트러스트, AI 보안, 산업보안 전략 로드맵",
+    accent: "#4338ca",
+    keywords: ["제로트러스트", "클라우드", "AI 보안", "OT"]
+  },
+  {
+    id: "quantum",
+    label: "양자",
+    title: "중소기업 전략기술로드맵 AI Agent - 양자 분야",
+    subtitle: "양자컴퓨팅, 통신, 센싱 기반 전략 로드맵",
+    accent: "#9333ea",
+    keywords: ["양자컴퓨팅", "양자통신", "양자센서", "암호"]
+  },
+  {
+    id: "space",
+    label: "우주",
+    title: "중소기업 전략기술로드맵 AI Agent - 우주 분야",
+    subtitle: "위성, 발사체, 우주데이터 활용 전략 로드맵",
+    accent: "#334155",
+    keywords: ["위성", "발사체", "우주부품", "관측데이터"]
+  }
+];
+
 const els = {
+  fieldLanding: document.querySelector("#fieldLanding"),
+  fieldGrid: document.querySelector("#fieldGrid"),
+  appShell: document.querySelector("#appShell"),
+  brandEyebrow: document.querySelector("#brandEyebrow"),
+  brandTitle: document.querySelector("#brandTitle"),
+  backToFieldsButton: document.querySelector("#backToFieldsButton"),
   unitList: document.querySelector("#unitList"),
   searchInput: document.querySelector("#searchInput"),
   tabs: document.querySelectorAll(".tab"),
@@ -46,6 +163,8 @@ const els = {
   selectedOwner: document.querySelector("#selectedOwner"),
   selectedTitle: document.querySelector("#selectedTitle"),
   selectedTags: document.querySelector("#selectedTags"),
+  roleTitle: document.querySelector("#roleTitle"),
+  roleBody: document.querySelector("#roleBody"),
   markdownBody: document.querySelector("#markdownBody"),
   uploadForm: document.querySelector("#uploadForm"),
   sourceFile: document.querySelector("#sourceFile"),
@@ -76,18 +195,15 @@ init();
 
 async function init() {
   const manifest = await loadManifest();
-  renderProject(manifest.project);
-
-  state.units = manifest.analysisUnits;
+  state.baseUnits = manifest.analysisUnits;
   state.references = loadStoredReferences();
-  await loadDocuments();
+  state.units = state.baseUnits;
+  await loadDocuments(state.baseUnits);
 
-  state.activeId = state.units[0]?.id ?? null;
   bindEvents();
   hydrateApiKey();
-  render();
-  renderActiveView();
-  await loadUploads();
+  renderFieldLanding();
+  showLanding();
 }
 
 async function loadManifest() {
@@ -106,9 +222,9 @@ async function loadManifest() {
   }
 }
 
-async function loadDocuments() {
+async function loadDocuments(units) {
   await Promise.all(
-    state.units.map(async (unit) => {
+    units.map(async (unit) => {
       try {
         const response = await fetch(`../content/${unit.file}`, { cache: "no-store" });
         if (!response.ok) throw new Error(`${unit.file} load failed`);
@@ -122,6 +238,14 @@ async function loadDocuments() {
 }
 
 function bindEvents() {
+  els.fieldGrid.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-field-id]");
+    if (!button) return;
+    await selectField(button.dataset.fieldId);
+  });
+
+  els.backToFieldsButton.addEventListener("click", showLanding);
+
   els.searchInput.addEventListener("input", (event) => {
     state.query = event.target.value.trim().toLowerCase();
     render();
@@ -156,8 +280,61 @@ function bindEvents() {
   els.downloadMarkdownButton.addEventListener("click", downloadMarkdown);
 }
 
+function renderFieldLanding() {
+  els.fieldGrid.innerHTML = strategyFields
+    .map(
+      (field, index) => `
+        <button class="field-card" data-field-id="${field.id}" style="--field-accent: ${field.accent}" type="button">
+          <span class="field-index">${String(index + 1).padStart(2, "0")}</span>
+          <span class="field-icon" aria-hidden="true">${fieldIcon(field.id)}</span>
+          <strong>${escapeHtml(field.label)}</strong>
+          <span>${escapeHtml(field.subtitle)}</span>
+        </button>
+      `
+    )
+    .join("");
+}
+
+function showLanding() {
+  state.activeFieldId = null;
+  els.fieldLanding.classList.remove("is-hidden");
+  els.appShell.classList.add("is-hidden");
+}
+
+async function selectField(fieldId) {
+  const field = getField(fieldId);
+  if (!field) return;
+
+  state.activeFieldId = field.id;
+  state.activeFilter = "all";
+  state.activeView = "analysis";
+  state.query = "";
+  els.searchInput.value = "";
+  els.tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.filter === "all"));
+
+  if (field.usesManifest) {
+    state.units = state.baseUnits;
+    state.expandedIds = new Set();
+  } else {
+    state.units = createTemplateUnits(field);
+    state.expandedIds = new Set([state.units[0]?.id].filter(Boolean));
+    state.units.forEach((unit) => {
+      state.documents.set(unit.id, createTemplateMarkdown(field, unit));
+    });
+  }
+
+  state.activeId = state.units[0]?.id ?? null;
+  renderProject(field);
+  renderFieldWorkspace(field);
+  els.fieldLanding.classList.add("is-hidden");
+  els.appShell.classList.remove("is-hidden");
+  render();
+  renderActiveView();
+  await loadUploads();
+}
+
 function hydrateApiKey() {
-  const savedKey = localStorage.getItem("semiconductorRoadmapOpenAiKey") || "";
+  const savedKey = localStorage.getItem("strategyRoadmapOpenAiKey") || localStorage.getItem("semiconductorRoadmapOpenAiKey") || "";
   if (savedKey) {
     els.openaiApiKey.value = savedKey;
     setApiKeyStatus("저장된 API 키를 사용합니다. 이 키는 현재 브라우저에만 저장되어 있습니다.", "success");
@@ -167,8 +344,16 @@ function hydrateApiKey() {
 function renderProject(project) {
   els.projectTitle.textContent = project.title;
   els.projectSubtitle.textContent = project.subtitle;
-  els.version.textContent = `v${project.version}`;
-  els.lastUpdated.textContent = project.lastUpdated;
+  els.version.textContent = `v${project.version || "1.0.0"}`;
+  els.lastUpdated.textContent = project.lastUpdated || fallbackManifest.project.lastUpdated;
+  els.brandEyebrow.textContent = `${getActiveField()?.label || "전략분야"} Roadmap PM`;
+  els.brandTitle.textContent = project.title;
+}
+
+function renderFieldWorkspace(field) {
+  els.roleTitle.textContent = `${field.label} 분야 PM Agent`;
+  els.roleBody.textContent = `${field.label} 분야의 환경분석, 지재권*지원과제 분석, 전략품목 후보군 도출을 연결해 중소기업 전략기술로드맵 작성을 지원합니다.`;
+  els.gptQuery.placeholder = `예: 2024-2026년 ${field.label} 분야 정책, 시장, 기술 이슈와 중소기업 R&D 기회영역을 Markdown 표로 정리해줘.`;
 }
 
 function saveApiKey() {
@@ -178,20 +363,20 @@ function saveApiKey() {
     return;
   }
 
-  localStorage.setItem("semiconductorRoadmapOpenAiKey", apiKey);
+  localStorage.setItem("strategyRoadmapOpenAiKey", apiKey);
   setApiKeyStatus("API 키를 이 브라우저에 저장했습니다.", "success");
 }
 
 function clearApiKey() {
+  localStorage.removeItem("strategyRoadmapOpenAiKey");
   localStorage.removeItem("semiconductorRoadmapOpenAiKey");
   els.openaiApiKey.value = "";
   setApiKeyStatus("저장된 API 키를 삭제했습니다.", "warning");
 }
 
 function render() {
-  const filtered = getFilteredUnits();
   renderMetrics();
-  renderUnitList(filtered);
+  renderUnitList();
 }
 
 function renderActiveView() {
@@ -226,19 +411,25 @@ function renderMetrics() {
   els.dashboardCount.textContent = counts.dashboard;
 }
 
-function renderUnitList(units) {
-  if (!units.length) {
+function renderUnitList() {
+  const visibleUnits = getVisibleUnits();
+
+  if (!visibleUnits.length) {
     els.unitList.innerHTML = `<div class="empty-state">검색 조건에 맞는 분석 단위가 없습니다.</div>`;
     return;
   }
 
-  els.unitList.innerHTML = units
-    .map((unit) => {
-      const tags = unit.tags.slice(0, 2).join(", ");
-      const indent = `level-${levelOrder[unit.level] || 1}`;
+  els.unitList.innerHTML = visibleUnits
+    .map(({ unit, depth, hasChildren }) => {
+      const tags = (unit.tags || []).slice(0, 2).join(", ");
+      const indent = `level-${depth + 1}`;
+      const isExpanded = state.expandedIds.has(unit.id);
       return `
         <button class="unit-button ${indent} ${unit.id === state.activeId ? "is-active" : ""}" data-id="${unit.id}" type="button">
-          <span class="level-label">${levelLabels[unit.level] || unit.level}</span>
+          <span class="unit-heading-row">
+            <span class="level-label">${levelLabels[unit.level] || unit.level}</span>
+            ${hasChildren ? `<span class="disclosure ${isExpanded ? "is-open" : ""}" aria-hidden="true">▾</span>` : ""}
+          </span>
           <strong>${escapeHtml(unit.title)}</strong>
           <span class="unit-meta">
             <span class="status-pill ${unit.status}">${statusLabel(unit.status)}</span>
@@ -251,7 +442,16 @@ function renderUnitList(units) {
 
   els.unitList.querySelectorAll(".unit-button").forEach((button) => {
     button.addEventListener("click", async () => {
-      state.activeId = button.dataset.id;
+      const unitId = button.dataset.id;
+      const hasChildren = state.units.some((unit) => unit.parentId === unitId);
+      state.activeId = unitId;
+      if (hasChildren) {
+        if (state.expandedIds.has(unitId)) {
+          state.expandedIds.delete(unitId);
+        } else {
+          state.expandedIds.add(unitId);
+        }
+      }
       render();
       renderActiveView();
       await loadUploads();
@@ -265,7 +465,7 @@ function renderDocument() {
 
   els.selectedOwner.textContent = `${unit.owner} · ${levelLabels[unit.level] || unit.level} · ${statusLabel(unit.status)}`;
   els.selectedTitle.textContent = unit.title;
-  els.selectedTags.innerHTML = [...unit.scope, ...unit.tags]
+  els.selectedTags.innerHTML = [...(unit.scope || []), ...(unit.tags || [])]
     .slice(0, 9)
     .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
     .join("");
@@ -489,6 +689,7 @@ function renderExportPreview() {
 }
 
 function downloadDoc() {
+  const field = getActiveField();
   const html = `
     <!doctype html>
     <html>
@@ -507,26 +708,28 @@ function downloadDoc() {
       <body>${markdownToHtml(buildCombinedMarkdown())}</body>
     </html>
   `;
-  downloadBlob(html, "semiconductor-roadmap-report.doc", "application/msword;charset=utf-8");
+  downloadBlob(html, `${field?.id || "strategy"}-roadmap-report.doc`, "application/msword;charset=utf-8");
 }
 
 function downloadMarkdown() {
-  downloadBlob(buildCombinedMarkdown(), "semiconductor-roadmap-report.md", "text/markdown;charset=utf-8");
+  const field = getActiveField();
+  downloadBlob(buildCombinedMarkdown(), `${field?.id || "strategy"}-roadmap-report.md`, "text/markdown;charset=utf-8");
 }
 
 function buildCombinedMarkdown() {
+  const field = getActiveField() || strategyFields[2];
   const chunks = [
-    "# 중소기업 전략기술로드맵 AI Agent - 반도체 분야",
+    `# ${field.title}`,
     "",
     "## AI Agent 역할",
     "",
-    "반도체 분야 PM으로서 2024-2026년 정책, 산업, 시장, 기술, 지재권 및 중기부 지원과제 분석 결과를 종합하여 전략품목 후보군과 KPI 기반 R&D Dashboard를 작성한다.",
+    `${field.label} 분야 PM으로서 2024-2026년 정책, 산업, 시장, 기술, 지재권 및 중기부 지원과제 분석 결과를 종합하여 전략품목 후보군을 도출한다.`,
     "",
     "## 분석 단위",
     "",
     "| 구분 | 분석 단위 | 담당 역할 | 분석 범위 |",
     "| --- | --- | --- | --- |",
-    ...state.units.map((unit) => `| ${levelLabels[unit.level] || unit.level} | ${unit.title} | ${unit.owner} | ${unit.scope.join(", ")} |`),
+    ...state.units.map((unit) => `| ${levelLabels[unit.level] || unit.level} | ${unit.title} | ${unit.owner} | ${(unit.scope || []).join(", ")} |`),
     ""
   ];
 
@@ -540,35 +743,173 @@ function buildCombinedMarkdown() {
   return chunks.join("\n");
 }
 
-function getFilteredUnits() {
-  return getHierarchicalUnits().filter((unit) => {
-    const markdown = state.documents.get(unit.id) ?? "";
-    const references = getReferences(unit.id).map((item) => `${item.title} ${item.source} ${item.memo}`).join(" ");
-    const uploads = (state.uploads[unit.id] || []).map((item) => item.originalName).join(" ");
-    const matchesFilter = state.activeFilter === "all" || unit.status === state.activeFilter;
-    const haystack = `${unit.title} ${unit.owner} ${unit.scope.join(" ")} ${unit.tags.join(" ")} ${references} ${uploads} ${markdown}`.toLowerCase();
-    const matchesQuery = !state.query || haystack.includes(state.query);
-    return matchesFilter && matchesQuery;
-  });
+function getField(fieldId) {
+  return strategyFields.find((field) => field.id === fieldId);
 }
 
-function getHierarchicalUnits() {
+function getActiveField() {
+  return getField(state.activeFieldId);
+}
+
+function createTemplateUnits(field) {
+  const prefix = field.id;
+  const owner = `${field.label} 분야 PM Agent`;
+  return [
+    {
+      id: `${prefix}-environment-analysis`,
+      title: `${field.label} 분야 환경분석`,
+      level: "phase",
+      status: "draft",
+      owner,
+      scope: ["정책", "산업", "시장", "기술"],
+      tags: ["환경분석", field.label, "전략기술로드맵"]
+    },
+    {
+      id: `${prefix}-policy-regulation`,
+      parentId: `${prefix}-environment-analysis`,
+      title: "정책·규제·지원사업 분석",
+      level: "analysis",
+      status: "draft",
+      owner: "정책 환경 분석 Agent",
+      scope: ["정부정책", "규제", "R&D 지원사업", "인증"],
+      tags: ["정책", "규제", "지원사업"]
+    },
+    {
+      id: `${prefix}-market-industry`,
+      parentId: `${prefix}-environment-analysis`,
+      title: "시장·산업·공급망 분석",
+      level: "analysis",
+      status: "draft",
+      owner: "시장·산업 분석 Agent",
+      scope: ["시장규모", "수요처", "공급망", "경쟁구도"],
+      tags: ["시장", "산업", "공급망"]
+    },
+    {
+      id: `${prefix}-technology-ip`,
+      parentId: `${prefix}-environment-analysis`,
+      title: "기술·특허·표준 분석",
+      level: "analysis",
+      status: "draft",
+      owner: "기술·IP 분석 Agent",
+      scope: ["핵심기술", "논문", "특허", "표준"],
+      tags: ["기술", "특허", "표준"]
+    },
+    {
+      id: `${prefix}-strategic-item-candidates`,
+      title: "전략품목 후보군 도출",
+      level: "phase",
+      status: "draft",
+      owner: "전략품목 구성 Agent",
+      scope: ["전략품목", "우선순위", "중소기업 적합성", "사업화"],
+      tags: ["전략품목", "후보군", "우선순위"]
+    },
+    {
+      id: `${prefix}-dashboard-roadmap`,
+      title: `${field.label} 분야 로드맵 및 KPI Dashboard`,
+      level: "phase",
+      status: "draft",
+      owner,
+      scope: ["로드맵", "KPI", "연차별 추진계획", "성과관리"],
+      tags: ["로드맵", "KPI", "R&D"]
+    }
+  ];
+}
+
+function createTemplateMarkdown(field, unit) {
+  const keywords = field.keywords.join(", ");
+  return [
+    "---",
+    `title: ${unit.title}`,
+    `owner: ${unit.owner}`,
+    `status: ${unit.status}`,
+    "---",
+    "",
+    `# ${unit.title}`,
+    "",
+    `${unit.owner}는 ${field.label} 분야 중소기업 전략기술로드맵 수립을 위해 ${unit.scope.join(", ")} 관점의 분석 초안을 작성한다.`,
+    "",
+    "## 분석 초점",
+    "",
+    ...unit.scope.map((item) => `- ${item}: ${field.label} 분야의 중소기업 기회영역과 정책 반영 방향을 정리`),
+    "",
+    "## 우선 검토 키워드",
+    "",
+    `- ${keywords}`,
+    "",
+    "## GPT 검색 프롬프트 예시",
+    "",
+    `- 2024-2026년 ${field.label} 분야의 정책, 시장, 기술 변화를 중소기업 R&D 관점으로 정리해줘.`,
+    `- ${field.label} 분야 전략품목 후보군을 시장성, 기술성, 정책부합성 기준으로 비교해줘.`,
+    ""
+  ].join("\n");
+}
+
+function isEnvironmentUnit(unit) {
+  const haystack = `${unit.id} ${unit.title} ${(unit.scope || []).join(" ")} ${(unit.tags || []).join(" ")}`;
+  return includesAny([haystack], ["환경분석", "정책", "산업", "시장", "기술"]);
+}
+
+function includesAny(values, needles) {
+  const haystack = values.join(" ");
+  return needles.some((needle) => haystack.includes(needle));
+}
+
+function fieldIcon(fieldId) {
+  const icons = {
+    ai: '<svg viewBox="0 0 24 24"><path d="M8 4h8v3h3v10h-3v3H8v-3H5V7h3V4Zm2 5v6h4.8v-1.8H12V9h-2Zm6 0v6h2V9h-2Z"/></svg>',
+    "bio-medical": '<svg viewBox="0 0 24 24"><path d="M11 3h2v6h6v2h-6v10h-2V11H5V9h6V3Zm6.5 11a3.5 3.5 0 1 1-3.5 3.5A3.5 3.5 0 0 1 17.5 14Z"/></svg>',
+    "semiconductor-display": '<svg viewBox="0 0 24 24"><path d="M7 7h10v10H7V7Zm2 2v6h6V9H9Zm9-6h2v3h2v2h-2v3h2v2h-2v3h2v2h-2v3h-2v-3h-3v3h-2v-3h-3v3H8v-3H5v3H3v-3H1v-2h2v-3H1v-2h2V8H1V6h2V3h2v3h3V3h2v3h3V3h2v3h3V3Z"/></svg>',
+    "next-communication": '<svg viewBox="0 0 24 24"><path d="M12 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-5-4 1.4 1.4a5.1 5.1 0 0 1 7.2 0L17 14a7 7 0 0 0-10 0Zm-4-4 1.4 1.4a10.8 10.8 0 0 1 15.2 0L21 10A12.8 12.8 0 0 0 3 10Zm4-6 1.4 1.4a5.1 5.1 0 0 0 7.2 0L17 4A7 7 0 0 1 7 4Z"/></svg>',
+    "advanced-materials": '<svg viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3 5 2.8-5 2.8-5-2.8 5-2.8ZM5 8.8l6 3.4v6.9l-6-3.3v-7Zm14 7-6 3.3v-6.9l6-3.4v7Z"/></svg>',
+    "advanced-manufacturing": '<svg viewBox="0 0 24 24"><path d="M3 21V9l5 3V9l5 3V5h8v16H3Zm12-2h2v-2h-2v2Zm-5 0h2v-2h-2v2Zm-5 0h2v-2H5v2Zm12-4h2V7h-2v8Z"/></svg>',
+    robot: '<svg viewBox="0 0 24 24"><path d="M11 2h2v3h4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h4V2ZM7 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H7Zm2 3h2v2H9v-2Zm4 0h2v2h-2v-2Zm-4 5v-2h6v2H9Z"/></svg>',
+    "advanced-mobility": '<svg viewBox="0 0 24 24"><path d="M5 11 7 6h10l2 5 2 1v5h-2v2h-3v-2H8v2H5v-2H3v-5l2-1Zm2.4-3-1.1 3h11.4l-1.1-3H7.4ZM7 14.2A1.8 1.8 0 1 0 7 17.8a1.8 1.8 0 0 0 0-3.6Zm10 0a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Z"/></svg>',
+    "climate-energy": '<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Zm0 4-4 7h3l-1 5 5-8h-3l1-4h-1Z"/></svg>',
+    "secondary-battery": '<svg viewBox="0 0 24 24"><path d="M8 4h8v2h2v14H6V6h2V4Zm0 4v10h8V8H8Zm5 1-4 5h3l-1 3 4-5h-3l1-3Z"/></svg>',
+    "cyber-security": '<svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Zm0 2.2 6 2.3V11c0 3.9-2.4 7.4-6 8.8-3.6-1.4-6-4.9-6-8.8V6.5l6-2.3Zm-1 5.8h2v4h-2v-4Zm0 6h2v2h-2v-2Z"/></svg>',
+    quantum: '<svg viewBox="0 0 24 24"><path d="M12 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm0-8c2 0 3.7 3 4.4 7.2C20.4 10 23 11.4 23 13s-2.6 3-6.6 3.8C15.7 21 14 24 12 24s-3.7-3-4.4-7.2C3.6 16 1 14.6 1 13s2.6-3 6.6-3.8C8.3 5 10 2 12 2Zm0 2c-.8 0-1.9 1.8-2.5 4.8a25 25 0 0 1 5 0C13.9 5.8 12.8 4 12 4Zm0 18c.8 0 1.9-1.8 2.5-4.8a25 25 0 0 1-5 0c.6 3 1.7 4.8 2.5 4.8ZM3 13c0 .6 1.6 1.4 4.3 2a25.4 25.4 0 0 1 0-4C4.6 11.6 3 12.4 3 13Zm18 0c0-.6-1.6-1.4-4.3-2a25.4 25.4 0 0 1 0 4c2.7-.6 4.3-1.4 4.3-2Z"/></svg>',
+    space: '<svg viewBox="0 0 24 24"><path d="M12 2c3 2.2 4.6 4.6 4.6 7.2 0 2.2-1.1 4-2.6 5.3l1 4.5-3-1.8L9 19l1-4.5a7 7 0 0 1-2.6-5.3C7.4 6.6 9 4.2 12 2Zm0 3.1c-1.7 1.6-2.6 3-2.6 4.1A4.5 4.5 0 0 0 12 13a4.5 4.5 0 0 0 2.6-3.8c0-1.1-.9-2.5-2.6-4.1ZM5 16l3-1-1 4-4 3 2-6Zm14 0 2 6-4-3-1-4 3 1Z"/></svg>'
+  };
+  return icons[fieldId] || icons.ai;
+}
+
+function getVisibleUnits() {
   const byParent = new Map();
   state.units.forEach((unit) => {
     const key = unit.parentId || "root";
     byParent.set(key, [...(byParent.get(key) || []), unit]);
   });
 
-  const ordered = [];
-  const visit = (parentId) => {
+  const matches = (unit) => {
+    const markdown = state.documents.get(unit.id) ?? "";
+    const references = getReferences(unit.id).map((item) => `${item.title} ${item.source} ${item.memo}`).join(" ");
+    const uploads = (state.uploads[unit.id] || []).map((item) => item.originalName).join(" ");
+    const matchesFilter = state.activeFilter === "all" || unit.status === state.activeFilter;
+    const haystack = `${unit.title} ${unit.owner} ${(unit.scope || []).join(" ")} ${(unit.tags || []).join(" ")} ${references} ${uploads} ${markdown}`.toLowerCase();
+    const matchesQuery = !state.query || haystack.includes(state.query);
+    return matchesFilter && matchesQuery;
+  };
+
+  const hasMatchingDescendant = (unit) => {
+    return (byParent.get(unit.id) || []).some((child) => matches(child) || hasMatchingDescendant(child));
+  };
+
+  const visible = [];
+  const visit = (parentId, depth) => {
     (byParent.get(parentId) || []).forEach((unit) => {
-      ordered.push(unit);
-      visit(unit.id);
+      const children = byParent.get(unit.id) || [];
+      const shouldShow = matches(unit) || hasMatchingDescendant(unit);
+      if (!shouldShow) return;
+
+      visible.push({ unit, depth, hasChildren: children.length > 0 });
+      if (children.length && (state.expandedIds.has(unit.id) || state.query)) {
+        visit(unit.id, depth + 1);
+      }
     });
   };
 
-  visit("root");
-  return ordered;
+  visit("root", 0);
+  return visible;
 }
 
 function getActiveUnit() {

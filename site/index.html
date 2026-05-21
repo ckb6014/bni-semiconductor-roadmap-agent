@@ -3,20 +3,33 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>중소기업 전략기술로드맵 AI Agent - 반도체 분야</title>
+    <title>중소기업 전략기술로드맵 에이전트</title>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <div class="app-shell">
+    <section id="fieldLanding" class="field-landing" aria-label="전략분야 선택">
+      <div class="landing-inner">
+        <header class="landing-header">
+          <p class="eyebrow">SME Strategy Technology Roadmap</p>
+          <h1>중소기업 전략기술로드맵 에이전트</h1>
+          <p>전략분야를 선택하면 분야별 PM Agent 워크스페이스로 이동합니다.</p>
+        </header>
+        <div id="fieldGrid" class="field-grid"></div>
+      </div>
+    </section>
+
+    <div id="appShell" class="app-shell is-hidden">
       <aside class="sidebar">
         <div class="brand">
-          <p class="eyebrow">Semiconductor Roadmap PM</p>
-          <h1>중소기업 전략기술로드맵 AI Agent - 반도체 분야</h1>
+          <p id="brandEyebrow" class="eyebrow">Roadmap PM Agent</p>
+          <h1 id="brandTitle">중소기업 전략기술로드맵 에이전트</h1>
         </div>
+
+        <button id="backToFieldsButton" class="field-switch-button" type="button">전략분야 선택</button>
 
         <label class="search-box" for="searchInput">
           <span>분석 단위 검색</span>
-          <input id="searchInput" type="search" placeholder="정책, 시장, 기술, 지재권, KPI">
+          <input id="searchInput" type="search" placeholder="정책, 산업, 시장, 기술, 지재권, 전략품목">
         </label>
 
         <div class="status-tabs" role="tablist" aria-label="상태 필터">
@@ -44,11 +57,11 @@
         <section class="role-panel" aria-label="AI Agent 역할">
           <div>
             <p class="eyebrow">Role</p>
-            <h3>반도체 분야 PM Agent</h3>
+            <h3 id="roleTitle">분야별 PM Agent</h3>
           </div>
-          <p>
+          <p id="roleBody">
             정책, 산업, 시장, 기술, 지재권 및 중기부 지원과제 데이터를 종합해
-            세부 전략분야와 전략품목 후보군을 도출하고 KPI 기반 R&amp;D Dashboard까지 연결합니다.
+            환경분석, 지재권*지원과제 분석, 전략품목 후보군 도출까지 연결합니다.
           </p>
         </section>
 
@@ -64,7 +77,7 @@
               <button id="clearApiKeyButton" class="icon-button" type="button" aria-label="API 키 삭제">x</button>
             </div>
             <p id="apiKeyStatus" class="helper-text">API 키는 각 사용자 브라우저에만 저장되며 GPT 검색 요청 시에만 사용됩니다.</p>
-            <textarea id="gptQuery" rows="2" placeholder="예: 2024-2026년 반도체 첨단패키징 정책과 중소기업 R&D 기회영역을 Markdown 표로 정리해줘."></textarea>
+            <textarea id="gptQuery" rows="2" placeholder="예: 선택한 전략분야의 2024-2026년 정책, 시장, 기술 이슈와 중소기업 R&D 기회영역을 Markdown 표로 정리해줘."></textarea>
           </div>
           <button id="gptSearchButton" class="primary-button" type="button">GPT 검색</button>
         </section>
@@ -147,7 +160,7 @@
                 <input id="referenceTitle" type="text" placeholder="문헌명 또는 보고서명" required>
                 <input id="referenceSource" type="text" placeholder="기관/저자/발행처">
                 <input id="referenceUrl" type="url" placeholder="URL">
-                <textarea id="referenceMemo" rows="3" placeholder="활용 메모: 어떤 주장, 표, KPI에 반영할지"></textarea>
+                <textarea id="referenceMemo" rows="3" placeholder="활용 메모: 어떤 주장, 표, 분석 결과에 반영할지"></textarea>
                 <button class="primary-button" type="submit">참고문헌 추가</button>
               </form>
             </div>
