@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>중소기업 전략기술로드맵 AI Agent - 반도체 분야</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <p class="eyebrow">Semiconductor Roadmap PM</p>
+          <h1>중소기업 전략기술로드맵 AI Agent - 반도체 분야</h1>
+        </div>
+
+        <label class="search-box" for="searchInput">
+          <span>분석 단위 검색</span>
+          <input id="searchInput" type="search" placeholder="정책, 시장, 기술, 지재권, KPI">
+        </label>
+
+        <div class="status-tabs" role="tablist" aria-label="상태 필터">
+          <button class="tab is-active" data-filter="all" type="button">전체</button>
+          <button class="tab" data-filter="draft" type="button">초안</button>
+          <button class="tab" data-filter="review" type="button">검토</button>
+          <button class="tab" data-filter="approved" type="button">승인</button>
+        </div>
+
+        <nav id="unitList" class="unit-list" aria-label="분석 단위"></nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p id="projectSubtitle" class="eyebrow">분석 단위별 Markdown 기반 로드맵 작성 워크스페이스</p>
+            <h2 id="projectTitle">중소기업 전략기술로드맵 AI Agent - 반도체 분야</h2>
+          </div>
+          <div class="meta-panel">
+            <span id="version">v1.0.0</span>
+            <span id="lastUpdated">2026-05-20</span>
+          </div>
+        </header>
+
+        <section class="role-panel" aria-label="AI Agent 역할">
+          <div>
+            <p class="eyebrow">Role</p>
+            <h3>반도체 분야 PM Agent</h3>
+          </div>
+          <p>
+            정책, 산업, 시장, 기술, 지재권 및 중기부 지원과제 데이터를 종합해
+            세부 전략분야와 전략품목 후보군을 도출하고 KPI 기반 R&amp;D Dashboard까지 연결합니다.
+          </p>
+        </section>
+
+        <section class="ai-search-panel" aria-label="GPT 검색">
+          <div>
+            <p class="eyebrow">GPT API Search</p>
+            <label for="gptQuery">분석 단위별 검색</label>
+          </div>
+          <textarea id="gptQuery" rows="2" placeholder="예: 2024-2026년 반도체 첨단패키징 정책과 중소기업 R&D 기회영역을 Markdown 표로 정리해줘."></textarea>
+          <button id="gptSearchButton" class="primary-button" type="button">GPT 검색</button>
+        </section>
+
+        <div class="workspace-tabs" role="tablist" aria-label="작업 탭">
+          <button class="workspace-tab is-active" data-view="analysis" type="button">Markdown</button>
+          <button class="workspace-tab" data-view="uploads" type="button">업로드</button>
+          <button class="workspace-tab" data-view="references" type="button">참고문헌</button>
+          <button class="workspace-tab" data-view="gpt" type="button">GPT 결과</button>
+          <button class="workspace-tab" data-view="export" type="button">로드맵 출력</button>
+        </div>
+
+        <section class="overview-grid" aria-label="진행 현황">
+          <div class="metric">
+            <span id="totalCount">0</span>
+            <p>분석 단위</p>
+          </div>
+          <div class="metric">
+            <span id="environmentCount">0</span>
+            <p>환경 분석</p>
+          </div>
+          <div class="metric">
+            <span id="strategyCount">0</span>
+            <p>전략 도출</p>
+          </div>
+          <div class="metric">
+            <span id="dashboardCount">0</span>
+            <p>상용화·KPI</p>
+          </div>
+        </section>
+
+        <section id="analysisView" class="view-panel is-active">
+          <article class="document-view">
+            <div class="document-toolbar">
+              <div>
+                <p id="selectedOwner" class="eyebrow">AI Agent</p>
+                <h3 id="selectedTitle">분석 단위를 선택하세요</h3>
+              </div>
+              <div id="selectedTags" class="tag-row"></div>
+            </div>
+            <div id="markdownBody" class="markdown-body">
+              <p>왼쪽 목록에서 분석 단위를 선택하면 Markdown 원고가 표시됩니다.</p>
+            </div>
+          </article>
+        </section>
+
+        <section id="uploadsView" class="view-panel">
+          <article class="document-view">
+            <div class="document-toolbar">
+              <div>
+                <p class="eyebrow">Source Files</p>
+                <h3>분석 단위별 원문 파일 업로드</h3>
+              </div>
+            </div>
+            <div class="form-body">
+              <form id="uploadForm" class="upload-form">
+                <label class="file-drop" for="sourceFile">
+                  <span>HWP, Word, PDF 파일 선택</span>
+                  <input id="sourceFile" type="file" accept=".hwp,.hwpx,.doc,.docx,.pdf" multiple>
+                </label>
+                <button id="uploadButton" class="primary-button" type="submit">현재 분석 단위에 업로드</button>
+              </form>
+              <div id="uploadStatus" class="notice">PM이 반영할 정책자료, 보고서, 논문, 과제목록 파일을 분석 단위별로 등록할 수 있습니다.</div>
+              <div id="uploadList" class="reference-list"></div>
+            </div>
+          </article>
+        </section>
+
+        <section id="referencesView" class="view-panel">
+          <article class="document-view">
+            <div class="document-toolbar">
+              <div>
+                <p class="eyebrow">References</p>
+                <h3>분석 단위별 참고문헌</h3>
+              </div>
+            </div>
+            <div class="form-body">
+              <div id="referenceList" class="reference-list"></div>
+              <form id="referenceForm" class="reference-form">
+                <input id="referenceTitle" type="text" placeholder="문헌명 또는 보고서명" required>
+                <input id="referenceSource" type="text" placeholder="기관/저자/발행처">
+                <input id="referenceUrl" type="url" placeholder="URL">
+                <textarea id="referenceMemo" rows="3" placeholder="활용 메모: 어떤 주장, 표, KPI에 반영할지"></textarea>
+                <button class="primary-button" type="submit">참고문헌 추가</button>
+              </form>
+            </div>
+          </article>
+        </section>
+
+        <section id="gptView" class="view-panel">
+          <article class="document-view">
+            <div class="document-toolbar">
+              <div>
+                <p class="eyebrow">GPT Result</p>
+                <h3>검색 결과 확인 및 반영</h3>
+              </div>
+              <button id="applyGptButton" class="secondary-button" type="button">현재 Markdown에 반영</button>
+            </div>
+            <div class="form-body">
+              <div id="gptStatus" class="notice">GPT 검색어를 입력하면 결과가 여기에 표시됩니다.</div>
+              <textarea id="gptResult" class="result-editor" rows="18" placeholder="GPT 분석 결과"></textarea>
+            </div>
+          </article>
+        </section>
+
+        <section id="exportView" class="view-panel">
+          <article class="document-view">
+            <div class="document-toolbar">
+              <div>
+                <p class="eyebrow">Roadmap Output</p>
+                <h3>로드맵 통합 출력</h3>
+              </div>
+              <div class="button-row">
+                <button id="downloadDocButton" class="primary-button" type="button">한글/Word 호환 .doc</button>
+                <button id="downloadMarkdownButton" class="secondary-button" type="button">통합 Markdown</button>
+              </div>
+            </div>
+            <div id="exportPreview" class="markdown-body export-preview"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

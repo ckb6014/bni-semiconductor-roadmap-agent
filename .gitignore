@@ -1,0 +1,8 @@
+uploads/
+*.log
+server-test*.out.log
+server-test*.err.log
+tunnel-localhostrun*.log
+node_modules/
+.env
+

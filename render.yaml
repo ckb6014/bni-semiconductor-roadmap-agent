@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: bni-semiconductor-roadmap-agent
+    runtime: node
+    plan: free
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-5

@@ -1,0 +1,15 @@
+{
+  "name": "bni-semiconductor-roadmap-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "중소기업 전략기술로드맵 AI Agent - 반도체 분야",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check site/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+

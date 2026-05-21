@@ -1,0 +1,106 @@
+{
+  "project": {
+    "title": "중소기업 전략기술로드맵 AI Agent - 반도체 분야",
+    "subtitle": "분석 단위별 Markdown 기반 로드맵 작성 워크스페이스",
+    "version": "1.0.0",
+    "lastUpdated": "2026-05-20"
+  },
+  "analysisUnits": [
+    {
+      "id": "markdown-01-policy",
+      "level": "environment",
+      "parentId": null,
+      "title": "마크다운1. 정책 환경 분석",
+      "status": "draft",
+      "owner": "정책 환경 분석가",
+      "file": "analysis-units/semiconductor-01-policy.md",
+      "scope": ["2024-2026", "국내외 정부정책", "규제·지원사업", "정책 진단"],
+      "tags": ["정책", "정부정책", "반도체특별법", "CHIPS Act"],
+      "references": []
+    },
+    {
+      "id": "markdown-02-industry",
+      "level": "environment",
+      "parentId": null,
+      "title": "마크다운2. 산업 환경 분석",
+      "status": "draft",
+      "owner": "산업 환경 분석가",
+      "file": "analysis-units/semiconductor-02-industry.md",
+      "scope": ["2024-2026", "산업구조", "공급망", "국내외 기업생태계"],
+      "tags": ["산업", "공급망", "파운드리", "소부장"],
+      "references": []
+    },
+    {
+      "id": "markdown-03-market",
+      "level": "environment",
+      "parentId": null,
+      "title": "마크다운3. 시장 환경 분석",
+      "status": "draft",
+      "owner": "시장 환경 분석가",
+      "file": "analysis-units/semiconductor-03-market.md",
+      "scope": ["2024-2026", "시장규모", "수급", "전략품목 동향"],
+      "tags": ["시장", "수급", "HBM", "AI 반도체"],
+      "references": []
+    },
+    {
+      "id": "markdown-04-technology",
+      "level": "environment",
+      "parentId": null,
+      "title": "마크다운4. 기술 환경 분석",
+      "status": "draft",
+      "owner": "기술 환경 분석가",
+      "file": "analysis-units/semiconductor-04-technology.md",
+      "scope": ["2024-2026", "기술개발", "논문동향", "표준동향", "주요 플레이어"],
+      "tags": ["기술", "논문", "표준", "첨단패키징"],
+      "references": []
+    },
+    {
+      "id": "markdown-04-ip-rnd",
+      "level": "dataAnalysis",
+      "parentId": null,
+      "title": "마크다운4. 지재권·지원과제 교차 분석",
+      "status": "draft",
+      "owner": "IP·중기부 지원과제 데이터 분석가",
+      "file": "analysis-units/semiconductor-04-ip-rnd.md",
+      "scope": ["세부 전략분야", "지재권 DB", "중기부 지원과제 DB", "집중·공백 분석"],
+      "tags": ["지재권", "지원과제", "교차분석", "R&D 공백"],
+      "references": []
+    },
+    {
+      "id": "markdown-05-candidates",
+      "level": "strategy",
+      "parentId": null,
+      "title": "마크다운5. 전략품목 후보군 구성",
+      "status": "draft",
+      "owner": "전략품목 후보군 구성가",
+      "file": "analysis-units/semiconductor-05-candidates.md",
+      "scope": ["환경분석", "IP·지원과제 분석", "전략품목 후보", "우선순위"],
+      "tags": ["전략품목", "후보군", "우선순위", "로드맵"],
+      "references": []
+    },
+    {
+      "id": "markdown-06-dashboard",
+      "level": "dashboard",
+      "parentId": null,
+      "title": "마크다운6. 상용화 방안 및 KPI 기반 R&D Dashboard",
+      "status": "draft",
+      "owner": "상용화·KPI 대시보드 설계가",
+      "file": "analysis-units/semiconductor-06-dashboard.md",
+      "scope": ["심층분석", "시장·표준·규제·판로", "상용화 방안", "KPI Dashboard"],
+      "tags": ["상용화", "KPI", "Dashboard", "R&D"],
+      "references": []
+    },
+    {
+      "id": "roadmap",
+      "level": "dashboard",
+      "parentId": null,
+      "title": "로드맵. 반도체 분야 전략기술로드맵",
+      "status": "draft",
+      "owner": "반도체 분야 PM",
+      "file": "analysis-units/semiconductor-07-roadmap.md",
+      "scope": ["로드맵 종합", "연차별 추진계획", "전략품목", "성과관리"],
+      "tags": ["로드맵", "PM", "R&D", "중소기업"],
+      "references": []
+    }
+  ]
+}
