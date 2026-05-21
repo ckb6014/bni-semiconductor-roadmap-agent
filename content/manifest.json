@@ -7,6 +7,18 @@
   },
   "analysisUnits": [
     {
+      "id": "roadmap-dashboard",
+      "level": "dashboard",
+      "parentId": null,
+      "title": "로드맵 Dashboard",
+      "status": "draft",
+      "owner": "반도체 분야 PM",
+      "file": "analysis-units/semiconductor-dashboard.md",
+      "scope": ["종합 현황", "집중·공백 히트맵", "전략품목 후보군"],
+      "tags": ["Dashboard", "종합", "히트맵", "전략품목"],
+      "references": []
+    },
+    {
       "id": "environment-analysis",
       "level": "phase",
       "parentId": null,

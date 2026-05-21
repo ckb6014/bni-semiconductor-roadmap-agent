@@ -251,14 +251,6 @@ function bindEvents() {
     render();
   });
 
-  els.tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      state.activeFilter = tab.dataset.filter;
-      els.tabs.forEach((item) => item.classList.toggle("is-active", item === tab));
-      render();
-    });
-  });
-
   els.workspaceTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       state.activeView = tab.dataset.view;
@@ -310,7 +302,6 @@ async function selectField(fieldId) {
   state.activeView = "analysis";
   state.query = "";
   els.searchInput.value = "";
-  els.tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.filter === "all"));
 
   if (field.usesManifest) {
     state.units = state.baseUnits;
@@ -469,7 +460,8 @@ function renderDocument() {
     .slice(0, 9)
     .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
     .join("");
-  els.markdownBody.innerHTML = markdownToHtml(withReferenceSection(unit.id, state.documents.get(unit.id) ?? ""));
+  const markdown = withReferenceSection(unit.id, state.documents.get(unit.id) ?? "");
+  els.markdownBody.innerHTML = unit.id === "roadmap-dashboard" ? dashboardToHtml(markdown) : markdownToHtml(markdown);
 }
 
 async function loadUploads() {
@@ -987,6 +979,116 @@ function downloadBlob(content, fileName, type) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+function dashboardToHtml() {
+  const units = state.units.filter((unit) => unit.id !== "roadmap-dashboard");
+  const environmentUnits = state.units.filter((unit) => unit.parentId === "environment-analysis");
+  const candidates = [
+    { label: "선점 후보", count: 3, items: "전력반도체 소재·소자, 검사·계측 SW, 친환경 공정부품" },
+    { label: "추격·차별화 후보", count: 4, items: "첨단패키징 장비, 고신뢰성 소재, 패키지 검사, 공정 자동화" },
+    { label: "선택 집중 후보", count: 2, items: "AI 반도체 설계 IP, HBM 연계 패키징" }
+  ];
+  const heatmap = [
+    ["첨단패키징 공정·장비", "high", "mid", "추격·차별화"],
+    ["전력반도체 소재·소자", "mid", "high", "선점 후보"],
+    ["AI 반도체 설계 IP", "high", "high", "선택 집중"],
+    ["반도체 검사·계측 SW", "low", "mid", "공백 진입"],
+    ["친환경 공정·부품", "low", "low", "신규 기획"]
+  ];
+
+  return `
+    <section class="dashboard-page">
+      <div class="dashboard-hero">
+        <div>
+          <p class="eyebrow">Roadmap Dashboard</p>
+          <h1>로드맵 Dashboard</h1>
+          <p>환경분석, 지재권*지원과제 분석, 전략품목 후보군 도출 현황을 한 장에서 점검합니다.</p>
+        </div>
+        <div class="dashboard-total">
+          <span>${candidates.reduce((sum, item) => sum + item.count, 0)}</span>
+          <p>전략품목 후보군</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="dashboard-section">
+          <div class="section-heading">
+            <p class="eyebrow">Analysis Units</p>
+            <h2>분석 단위별 결과</h2>
+          </div>
+          <div class="unit-summary-grid">
+            ${environmentUnits
+              .map(
+                (unit) => `
+                  <div class="summary-tile">
+                    <strong>${escapeHtml(unit.title)}</strong>
+                    <span>${escapeHtml((unit.scope || []).slice(0, 3).join(" · "))}</span>
+                    <p>${escapeHtml(unit.owner)}</p>
+                  </div>
+                `
+              )
+              .join("")}
+          </div>
+        </article>
+
+        <article class="dashboard-section">
+          <div class="section-heading">
+            <p class="eyebrow">IP * R&D Projects</p>
+            <h2>집중·공백 히트맵</h2>
+          </div>
+          <div class="heatmap-table">
+            <div class="heatmap-row heatmap-head">
+              <span>세부 영역</span>
+              <span>특허</span>
+              <span>지원과제</span>
+              <span>포지션</span>
+            </div>
+            ${heatmap
+              .map(
+                ([area, patent, project, position]) => `
+                  <div class="heatmap-row">
+                    <strong>${escapeHtml(area)}</strong>
+                    <span class="heat ${patent}">${heatLabel(patent)}</span>
+                    <span class="heat ${project}">${heatLabel(project)}</span>
+                    <span>${escapeHtml(position)}</span>
+                  </div>
+                `
+              )
+              .join("")}
+          </div>
+        </article>
+
+        <article class="dashboard-section dashboard-section-wide">
+          <div class="section-heading">
+            <p class="eyebrow">Strategic Item Candidates</p>
+            <h2>전략품목 후보군 수</h2>
+          </div>
+          <div class="candidate-grid">
+            ${candidates
+              .map(
+                (item) => `
+                  <div class="candidate-card">
+                    <span>${item.count}</span>
+                    <strong>${escapeHtml(item.label)}</strong>
+                    <p>${escapeHtml(item.items)}</p>
+                  </div>
+                `
+              )
+              .join("")}
+          </div>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function heatLabel(value) {
+  return {
+    high: "높음",
+    mid: "중간",
+    low: "낮음"
+  }[value] || value;
 }
 
 function markdownToHtml(markdown) {
