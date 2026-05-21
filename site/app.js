@@ -26,7 +26,7 @@ const levelOrder = {
 const fallbackManifest = {
   project: {
     title: "중소기업 전략기술로드맵 AI Agent - 반도체·디스플레이 분야",
-    subtitle: "분석 단위별 Markdown 기반 로드맵 작성 워크스페이스",
+    subtitle: "로드맵 작성 워크스페이스",
     version: "1.0.0",
     lastUpdated: "2026-05-20"
   },
@@ -54,7 +54,7 @@ const strategyFields = [
     id: "semiconductor-display",
     label: "반도체·디스플레이",
     title: "중소기업 전략기술로드맵 AI Agent - 반도체·디스플레이 분야",
-    subtitle: "분석 단위별 Markdown 기반 로드맵 작성 워크스페이스",
+    subtitle: "로드맵 작성 워크스페이스",
     accent: "#7c3aed",
     keywords: ["첨단패키징", "전력반도체", "디스플레이", "소부장"],
     usesManifest: true
@@ -151,15 +151,10 @@ const els = {
   unitList: document.querySelector("#unitList"),
   searchInput: document.querySelector("#searchInput"),
   tabs: document.querySelectorAll(".tab"),
-  workspaceTabs: document.querySelectorAll(".workspace-tab"),
   projectTitle: document.querySelector("#projectTitle"),
   projectSubtitle: document.querySelector("#projectSubtitle"),
   version: document.querySelector("#version"),
   lastUpdated: document.querySelector("#lastUpdated"),
-  totalCount: document.querySelector("#totalCount"),
-  environmentCount: document.querySelector("#environmentCount"),
-  strategyCount: document.querySelector("#strategyCount"),
-  dashboardCount: document.querySelector("#dashboardCount"),
   selectedOwner: document.querySelector("#selectedOwner"),
   selectedTitle: document.querySelector("#selectedTitle"),
   selectedTags: document.querySelector("#selectedTags"),
@@ -214,7 +209,7 @@ async function loadManifest() {
   } catch (error) {
     els.markdownBody.innerHTML = `
       <div class="empty-state">
-        <strong>Markdown 자동 로딩을 사용할 수 없습니다.</strong>
+        <strong>원고 자동 로딩을 사용할 수 없습니다.</strong>
         <p>PowerShell에서 <code>.\\Start-Site.ps1</code>를 실행한 뒤 <code>http://localhost:8080/site/</code>로 접속하세요.</p>
       </div>
     `;
@@ -231,7 +226,7 @@ async function loadDocuments(units) {
         const markdown = await response.text();
         state.documents.set(unit.id, markdown);
       } catch (error) {
-        state.documents.set(unit.id, `# ${unit.title}\n\nMarkdown 파일을 불러오지 못했습니다.`);
+        state.documents.set(unit.id, `# ${unit.title}\n\n원고 파일을 불러오지 못했습니다.`);
       }
     })
   );
@@ -249,13 +244,6 @@ function bindEvents() {
   els.searchInput.addEventListener("input", (event) => {
     state.query = event.target.value.trim().toLowerCase();
     render();
-  });
-
-  els.workspaceTabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      state.activeView = tab.dataset.view;
-      renderActiveView();
-    });
   });
 
   els.uploadForm.addEventListener("submit", uploadFiles);
@@ -344,7 +332,7 @@ function renderProject(project) {
 function renderFieldWorkspace(field) {
   els.roleTitle.textContent = `${field.label} 분야 PM Agent`;
   els.roleBody.textContent = `${field.label} 분야의 환경분석, 지재권*지원과제 분석, 전략품목 후보군 도출을 연결해 중소기업 전략기술로드맵 작성을 지원합니다.`;
-  els.gptQuery.placeholder = `예: 2024-2026년 ${field.label} 분야 정책, 시장, 기술 이슈와 중소기업 R&D 기회영역을 Markdown 표로 정리해줘.`;
+  els.gptQuery.placeholder = `예: 2024-2026년 ${field.label} 분야 정책, 시장, 기술 이슈와 중소기업 R&D 기회영역을 표로 정리해줘.`;
 }
 
 function saveApiKey() {
@@ -366,7 +354,6 @@ function clearApiKey() {
 }
 
 function render() {
-  renderMetrics();
   renderUnitList();
 }
 
@@ -374,32 +361,10 @@ function renderActiveView() {
   document.querySelectorAll(".view-panel").forEach((panel) => {
     panel.classList.toggle("is-active", panel.id === `${state.activeView}View`);
   });
-  els.workspaceTabs.forEach((tab) => {
-    tab.classList.toggle("is-active", tab.dataset.view === state.activeView);
-  });
-
   if (state.activeView === "analysis") renderDocument();
   if (state.activeView === "uploads") renderUploads();
   if (state.activeView === "references") renderReferences();
   if (state.activeView === "export") renderExportPreview();
-}
-
-function renderMetrics() {
-  const counts = state.units.reduce(
-    (acc, unit) => {
-      acc.total += 1;
-      if (unit.parentId === "environment-analysis") acc.environment += 1;
-      if (unit.id === "ip-rnd-analysis") acc.strategy += 1;
-      if (unit.id === "strategic-item-candidates") acc.dashboard += 1;
-      return acc;
-    },
-    { total: 0, environment: 0, strategy: 0, dashboard: 0 }
-  );
-
-  els.totalCount.textContent = counts.total;
-  els.environmentCount.textContent = counts.environment;
-  els.strategyCount.textContent = counts.strategy;
-  els.dashboardCount.textContent = counts.dashboard;
 }
 
 function renderUnitList() {
@@ -599,6 +564,7 @@ async function runGptSearch() {
       },
       body: JSON.stringify({
         query,
+        field: getActiveField(),
         unit,
         markdown: state.documents.get(unit.id) ?? "",
         references: getReferences(unit.id),
@@ -611,7 +577,7 @@ async function runGptSearch() {
 
     state.lastGptResult = data.result;
     els.gptResult.value = data.result;
-    setGptStatus("GPT 검색 결과가 준비되었습니다. 필요한 부분을 수정한 뒤 현재 Markdown에 반영할 수 있습니다.", "success");
+    setGptStatus("GPT 검색 결과가 준비되었습니다. 필요한 부분을 수정한 뒤 현재 원고에 반영할 수 있습니다.", "success");
     state.activeView = "gpt";
     renderActiveView();
   } catch (error) {
@@ -629,7 +595,7 @@ async function applyGptResult() {
     return;
   }
 
-  setGptStatus("현재 Markdown 파일에 GPT 결과를 반영하고 있습니다.", "loading");
+  setGptStatus("현재 원고에 GPT 결과를 반영하고 있습니다.", "loading");
   try {
     const response = await fetch(`/api/analysis-units/${encodeURIComponent(unit.id)}/append`, {
       method: "POST",
@@ -641,10 +607,10 @@ async function applyGptResult() {
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Markdown 반영에 실패했습니다.");
+    if (!response.ok) throw new Error(data.error || "원고 반영에 실패했습니다.");
 
     state.documents.set(unit.id, data.markdown);
-    setGptStatus("현재 분석 단위 Markdown 파일에 반영되었습니다.", "success");
+    setGptStatus("현재 분석 단위 원고에 반영되었습니다.", "success");
     state.activeView = "analysis";
     renderActiveView();
   } catch (error) {

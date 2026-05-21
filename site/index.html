@@ -38,7 +38,7 @@
       <main class="workspace">
         <header class="topbar">
           <div>
-            <p id="projectSubtitle" class="eyebrow">분석 단위별 Markdown 기반 로드맵 작성 워크스페이스</p>
+            <p id="projectSubtitle" class="eyebrow">로드맵 작성 워크스페이스</p>
             <h2 id="projectTitle">중소기업 전략기술로드맵 AI Agent - 반도체 분야</h2>
           </div>
           <div class="meta-panel">
@@ -70,36 +70,9 @@
               <button id="clearApiKeyButton" class="icon-button" type="button" aria-label="API 키 삭제">x</button>
             </div>
             <p id="apiKeyStatus" class="helper-text">API 키는 각 사용자 브라우저에만 저장되며 GPT 검색 요청 시에만 사용됩니다.</p>
-            <textarea id="gptQuery" rows="2" placeholder="예: 선택한 전략분야의 2024-2026년 정책, 시장, 기술 이슈와 중소기업 R&D 기회영역을 Markdown 표로 정리해줘."></textarea>
+            <textarea id="gptQuery" rows="2" placeholder="예: 선택한 전략분야의 2024-2026년 정책, 시장, 기술 이슈와 중소기업 R&D 기회영역을 표로 정리해줘."></textarea>
           </div>
           <button id="gptSearchButton" class="primary-button" type="button">GPT 검색</button>
-        </section>
-
-        <div class="workspace-tabs" role="tablist" aria-label="작업 탭">
-          <button class="workspace-tab is-active" data-view="analysis" type="button">Markdown</button>
-          <button class="workspace-tab" data-view="uploads" type="button">업로드</button>
-          <button class="workspace-tab" data-view="references" type="button">참고문헌</button>
-          <button class="workspace-tab" data-view="gpt" type="button">GPT 결과</button>
-          <button class="workspace-tab" data-view="export" type="button">로드맵 출력</button>
-        </div>
-
-        <section class="overview-grid" aria-label="진행 현황">
-          <div class="metric">
-            <span id="totalCount">0</span>
-            <p>분석 단위</p>
-          </div>
-          <div class="metric">
-            <span id="environmentCount">0</span>
-            <p>환경분석 하위</p>
-          </div>
-          <div class="metric">
-            <span id="strategyCount">0</span>
-            <p>지재권*지원과제</p>
-          </div>
-          <div class="metric">
-            <span id="dashboardCount">0</span>
-            <p>후보군 도출</p>
-          </div>
         </section>
 
         <section id="analysisView" class="view-panel is-active">
@@ -112,7 +85,7 @@
               <div id="selectedTags" class="tag-row"></div>
             </div>
             <div id="markdownBody" class="markdown-body">
-              <p>왼쪽 목록에서 분석 단위를 선택하면 Markdown 원고가 표시됩니다.</p>
+              <p>왼쪽 목록에서 분석 단위를 선택하면 원고가 표시됩니다.</p>
             </div>
           </article>
         </section>
@@ -167,7 +140,7 @@
                 <p class="eyebrow">GPT Result</p>
                 <h3>검색 결과 확인 및 반영</h3>
               </div>
-              <button id="applyGptButton" class="secondary-button" type="button">현재 Markdown에 반영</button>
+              <button id="applyGptButton" class="secondary-button" type="button">현재 원고에 반영</button>
             </div>
             <div class="form-body">
               <div id="gptStatus" class="notice">GPT 검색어를 입력하면 결과가 여기에 표시됩니다.</div>
@@ -185,7 +158,7 @@
               </div>
               <div class="button-row">
                 <button id="downloadDocButton" class="primary-button" type="button">한글/Word 호환 .doc</button>
-                <button id="downloadMarkdownButton" class="secondary-button" type="button">통합 Markdown</button>
+                <button id="downloadMarkdownButton" class="secondary-button" type="button">통합 원고</button>
               </div>
             </div>
             <div id="exportPreview" class="markdown-body export-preview"></div>
