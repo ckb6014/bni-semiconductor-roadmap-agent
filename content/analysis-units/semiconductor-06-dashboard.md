@@ -1,11 +1,11 @@
 ---
 id: markdown-06-dashboard
-title: 마크다운6. 상용화 방안 및 KPI 기반 R&D Dashboard
+title: 상용화 방안 및 KPI 기반 R&D Dashboard
 owner: 상용화·KPI 대시보드 설계가
 status: draft
 ---
 
-# 마크다운6. 상용화 방안 및 KPI 기반 R&D Dashboard
+# 상용화 방안 및 KPI 기반 R&D Dashboard
 
 ## 역할 정의
 
@@ -33,4 +33,3 @@ status: draft
 
 - 반도체 전략품목 후보군의 상용화 방안을 시장, 표준, 규제, 판로 관점으로 정리하고 KPI Dashboard를 만들어줘.
 - 중소기업 R&D 과제기획에 사용할 반도체 분야 KPI 지표와 산식을 제안해줘.
-

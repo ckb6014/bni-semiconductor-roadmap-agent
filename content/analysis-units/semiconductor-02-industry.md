@@ -1,11 +1,11 @@
 ---
 id: markdown-02-industry
-title: 마크다운2. 산업 환경 분석
+title: 산업 환경 분석
 owner: 산업 환경 분석가
 status: draft
 ---
 
-# 마크다운2. 산업 환경 분석
+# 산업 환경 분석
 
 ## 역할 정의
 
@@ -30,4 +30,3 @@ status: draft
 | 산업 변화 | 관련 세부 전략분야 | 기회 요인 | 위협 요인 | R&D 필요성 |
 | --- | --- | --- | --- | --- |
 | TBD | TBD | TBD | TBD | TBD |
-

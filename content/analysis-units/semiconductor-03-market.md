@@ -1,11 +1,11 @@
 ---
 id: markdown-03-market
-title: 마크다운3. 시장 환경 분석
+title: 시장 환경 분석
 owner: 시장 환경 분석가
 status: draft
 ---
 
-# 마크다운3. 시장 환경 분석
+# 시장 환경 분석
 
 ## 역할 정의
 
@@ -30,4 +30,3 @@ status: draft
 | 품목 후보 | 수요처 | 시장 성장성 | 수급 이슈 | 중소기업 진입 논리 |
 | --- | --- | --- | --- | --- |
 | TBD | TBD | TBD | TBD | TBD |
-

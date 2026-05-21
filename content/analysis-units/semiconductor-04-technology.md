@@ -1,11 +1,11 @@
 ---
 id: markdown-04-technology
-title: 마크다운4. 기술 환경 분석
+title: 기술 환경 분석
 owner: 기술 환경 분석가
 status: draft
 ---
 
-# 마크다운4. 기술 환경 분석
+# 기술 환경 분석
 
 ## 역할 정의
 
@@ -31,4 +31,3 @@ status: draft
 | 기술 영역 | 주요 플레이어·기관 | 논문·표준 동향 | 기술 장벽 | R&D 필요 영역 |
 | --- | --- | --- | --- | --- |
 | TBD | TBD | TBD | TBD | TBD |
-
