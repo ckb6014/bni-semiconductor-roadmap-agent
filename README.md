@@ -17,14 +17,9 @@ PowerShell에서 아래 명령을 실행한 뒤 브라우저에서 `http://local
 .\Start-Site.ps1
 ```
 
-GPT 검색까지 사용하려면 실행 전에 OpenAI API 키를 환경변수로 설정합니다.
+GPT 검색은 웹 페이지 상단의 `내 OpenAI API 키 입력` 칸에 각 사용자의 API 키를 입력해 사용합니다. 키는 해당 사용자의 브라우저에만 저장되고, GPT 검색 요청 시 OpenAI 호출에만 사용됩니다.
 
-```powershell
-$env:OPENAI_API_KEY="YOUR_API_KEY"
-.\Start-Site.ps1
-```
-
-기본 모델은 `gpt-5`이며, 필요하면 `$env:OPENAI_MODEL`로 바꿀 수 있습니다.
+기본 모델은 `gpt-5`이며, 운영자가 바꾸려면 서버 환경변수 `$env:OPENAI_MODEL`로 변경할 수 있습니다.
 
 ## 외부 공유용 무료 임시 배포
 
@@ -42,7 +37,7 @@ $env:OPENAI_API_KEY="YOUR_API_KEY"
 
 자세한 절차는 `DEPLOY_RENDER.md`를 참고합니다. 배포 후 제공되는 `https://*.onrender.com` 주소는 같은 링크로 계속 접속할 수 있습니다.
 
-Render 무료 인스턴스는 유휴 상태에서 잠들 수 있고, 파일 업로드 저장소는 재시작 시 사라질 수 있습니다. 장기 운영에서는 외부 스토리지 연결이 필요합니다.
+Render 무료 인스턴스는 유휴 상태에서 잠들 수 있고, 파일 업로드 저장소는 재시작 시 사라질 수 있습니다. 장기 운영에서는 외부 스토리지 연결이 필요합니다. 팀 공용 API 키를 쓰지 않는 구조이므로 `OPENAI_API_KEY` 환경변수는 필수가 아닙니다.
 
 ## 분석 단위
 

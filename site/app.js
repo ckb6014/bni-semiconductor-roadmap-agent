@@ -62,6 +62,10 @@ const els = {
   referenceSource: document.querySelector("#referenceSource"),
   referenceUrl: document.querySelector("#referenceUrl"),
   referenceMemo: document.querySelector("#referenceMemo"),
+  openaiApiKey: document.querySelector("#openaiApiKey"),
+  saveApiKeyButton: document.querySelector("#saveApiKeyButton"),
+  clearApiKeyButton: document.querySelector("#clearApiKeyButton"),
+  apiKeyStatus: document.querySelector("#apiKeyStatus"),
   gptQuery: document.querySelector("#gptQuery"),
   gptSearchButton: document.querySelector("#gptSearchButton"),
   gptStatus: document.querySelector("#gptStatus"),
@@ -84,6 +88,7 @@ async function init() {
 
   state.activeId = state.units[0]?.id ?? null;
   bindEvents();
+  hydrateApiKey();
   render();
   renderActiveView();
   await loadUploads();
@@ -142,6 +147,8 @@ function bindEvents() {
   });
 
   els.uploadForm.addEventListener("submit", uploadFiles);
+  els.saveApiKeyButton.addEventListener("click", saveApiKey);
+  els.clearApiKeyButton.addEventListener("click", clearApiKey);
   els.referenceForm.addEventListener("submit", (event) => {
     event.preventDefault();
     addReference();
@@ -153,11 +160,36 @@ function bindEvents() {
   els.downloadMarkdownButton.addEventListener("click", downloadMarkdown);
 }
 
+function hydrateApiKey() {
+  const savedKey = localStorage.getItem("semiconductorRoadmapOpenAiKey") || "";
+  if (savedKey) {
+    els.openaiApiKey.value = savedKey;
+    setApiKeyStatus("저장된 API 키를 사용합니다. 이 키는 현재 브라우저에만 저장되어 있습니다.", "success");
+  }
+}
+
 function renderProject(project) {
   els.projectTitle.textContent = project.title;
   els.projectSubtitle.textContent = project.subtitle;
   els.version.textContent = `v${project.version}`;
   els.lastUpdated.textContent = project.lastUpdated;
+}
+
+function saveApiKey() {
+  const apiKey = els.openaiApiKey.value.trim();
+  if (!apiKey) {
+    setApiKeyStatus("저장할 API 키를 입력하세요.", "warning");
+    return;
+  }
+
+  localStorage.setItem("semiconductorRoadmapOpenAiKey", apiKey);
+  setApiKeyStatus("API 키를 이 브라우저에 저장했습니다.", "success");
+}
+
+function clearApiKey() {
+  localStorage.removeItem("semiconductorRoadmapOpenAiKey");
+  els.openaiApiKey.value = "";
+  setApiKeyStatus("저장된 API 키를 삭제했습니다.", "warning");
 }
 
 function render() {
@@ -357,8 +389,13 @@ function renderReferences() {
 async function runGptSearch() {
   const unit = getActiveUnit();
   const query = els.gptQuery.value.trim();
+  const apiKey = els.openaiApiKey.value.trim() || localStorage.getItem("semiconductorRoadmapOpenAiKey") || "";
   if (!query) {
     setGptStatus("검색어를 입력하세요.", "warning");
+    return;
+  }
+  if (!apiKey) {
+    setGptStatus("GPT 검색을 사용하려면 본인의 OpenAI API 키를 입력한 뒤 키 저장을 누르세요.", "warning");
     return;
   }
 
@@ -368,7 +405,10 @@ async function runGptSearch() {
   try {
     const response = await fetch("/api/gpt-search", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-OpenAI-API-Key": apiKey
+      },
       body: JSON.stringify({
         query,
         unit,
@@ -593,6 +633,11 @@ function setGptStatus(message, type) {
 function setUploadStatus(message, type) {
   els.uploadStatus.textContent = message;
   els.uploadStatus.className = `notice ${type || ""}`;
+}
+
+function setApiKeyStatus(message, type) {
+  els.apiKeyStatus.textContent = message;
+  els.apiKeyStatus.className = `helper-text ${type || ""}`;
 }
 
 function downloadBlob(content, fileName, type) {

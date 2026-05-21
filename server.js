@@ -65,9 +65,10 @@ server.listen(port, "0.0.0.0", () => {
 });
 
 async function handleGptSearch(req, res) {
-  if (!process.env.OPENAI_API_KEY) {
+  const requestApiKey = getRequestApiKey(req);
+  if (!requestApiKey) {
     sendJson(res, 400, {
-      error: "OPENAI_API_KEY 환경변수가 없습니다. PowerShell에서 $env:OPENAI_API_KEY='키값' 설정 후 다시 실행하세요."
+      error: "OpenAI API 키가 없습니다. 페이지에서 본인의 API 키를 입력한 뒤 다시 검색하세요."
     });
     return;
   }
@@ -113,7 +114,7 @@ async function handleGptSearch(req, res) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+      Authorization: `Bearer ${requestApiKey}`
     },
     body: JSON.stringify({
       model,
@@ -129,6 +130,12 @@ async function handleGptSearch(req, res) {
   }
 
   sendJson(res, 200, { result: extractText(data), rawId: data.id });
+}
+
+function getRequestApiKey(req) {
+  const headerValue = req.headers["x-openai-api-key"];
+  const key = Array.isArray(headerValue) ? headerValue[0] : headerValue;
+  return String(key || process.env.OPENAI_API_KEY || "").trim();
 }
 
 async function handleListUploads(res, unitId) {

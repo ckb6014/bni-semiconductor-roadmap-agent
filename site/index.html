@@ -57,7 +57,15 @@
             <p class="eyebrow">GPT API Search</p>
             <label for="gptQuery">분석 단위별 검색</label>
           </div>
-          <textarea id="gptQuery" rows="2" placeholder="예: 2024-2026년 반도체 첨단패키징 정책과 중소기업 R&D 기회영역을 Markdown 표로 정리해줘."></textarea>
+          <div class="gpt-controls">
+            <div class="api-key-row">
+              <input id="openaiApiKey" type="password" autocomplete="off" placeholder="내 OpenAI API 키 입력 (sk-... 또는 org 정책에 맞는 키)">
+              <button id="saveApiKeyButton" class="secondary-button" type="button">키 저장</button>
+              <button id="clearApiKeyButton" class="icon-button" type="button" aria-label="API 키 삭제">x</button>
+            </div>
+            <p id="apiKeyStatus" class="helper-text">API 키는 각 사용자 브라우저에만 저장되며 GPT 검색 요청 시에만 사용됩니다.</p>
+            <textarea id="gptQuery" rows="2" placeholder="예: 2024-2026년 반도체 첨단패키징 정책과 중소기업 R&D 기회영역을 Markdown 표로 정리해줘."></textarea>
+          </div>
           <button id="gptSearchButton" class="primary-button" type="button">GPT 검색</button>
         </section>
 

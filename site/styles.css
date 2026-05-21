@@ -293,6 +293,7 @@ textarea {
 
 .ai-search-panel {
   grid-template-columns: 150px minmax(0, 1fr) auto;
+  align-items: stretch;
 }
 
 .ai-search-panel label {
@@ -301,7 +302,34 @@ textarea {
   font-weight: 800;
 }
 
+.gpt-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.api-key-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 38px;
+  gap: 8px;
+}
+
+.helper-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.helper-text.success {
+  color: var(--approved);
+}
+
+.helper-text.warning {
+  color: var(--warning);
+}
+
 .ai-search-panel textarea,
+.api-key-row input,
 .reference-form input,
 .reference-form textarea,
 .result-editor {
@@ -316,6 +344,7 @@ textarea {
 }
 
 .ai-search-panel textarea:focus,
+.api-key-row input:focus,
 .reference-form input:focus,
 .reference-form textarea:focus,
 .result-editor:focus {
@@ -667,7 +696,8 @@ textarea {
   }
 
   .role-panel,
-  .upload-form {
+  .upload-form,
+  .api-key-row {
     grid-template-columns: 1fr;
   }
 
