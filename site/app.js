@@ -11,17 +11,13 @@ const state = {
 };
 
 const levelLabels = {
-  environment: "환경 분석",
-  dataAnalysis: "DB 교차 분석",
-  strategy: "전략 도출",
-  dashboard: "상용화·KPI"
+  phase: "분석 단계",
+  analysis: "하위 분석"
 };
 
 const levelOrder = {
-  environment: 1,
-  dataAnalysis: 2,
-  strategy: 3,
-  dashboard: 4
+  phase: 1,
+  analysis: 2
 };
 
 const fallbackManifest = {
@@ -216,9 +212,9 @@ function renderMetrics() {
   const counts = state.units.reduce(
     (acc, unit) => {
       acc.total += 1;
-      if (unit.level === "environment") acc.environment += 1;
-      if (unit.level === "dataAnalysis" || unit.level === "strategy") acc.strategy += 1;
-      if (unit.level === "dashboard") acc.dashboard += 1;
+      if (unit.parentId === "environment-analysis") acc.environment += 1;
+      if (unit.id === "ip-rnd-analysis") acc.strategy += 1;
+      if (unit.id === "strategic-item-candidates") acc.dashboard += 1;
       return acc;
     },
     { total: 0, environment: 0, strategy: 0, dashboard: 0 }

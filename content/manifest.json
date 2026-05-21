@@ -7,10 +7,22 @@
   },
   "analysisUnits": [
     {
-      "id": "markdown-01-policy",
-      "level": "environment",
+      "id": "environment-analysis",
+      "level": "phase",
       "parentId": null,
-      "title": "정책 환경 분석",
+      "title": "환경분석",
+      "status": "draft",
+      "owner": "반도체 분야 PM",
+      "file": "analysis-units/semiconductor-00-environment.md",
+      "scope": ["정책", "산업", "시장", "기술"],
+      "tags": ["환경분석", "정책", "산업", "시장", "기술"],
+      "references": []
+    },
+    {
+      "id": "environment-policy",
+      "level": "analysis",
+      "parentId": "environment-analysis",
+      "title": "정책",
       "status": "draft",
       "owner": "정책 환경 분석가",
       "file": "analysis-units/semiconductor-01-policy.md",
@@ -19,10 +31,10 @@
       "references": []
     },
     {
-      "id": "markdown-02-industry",
-      "level": "environment",
-      "parentId": null,
-      "title": "산업 환경 분석",
+      "id": "environment-industry",
+      "level": "analysis",
+      "parentId": "environment-analysis",
+      "title": "산업",
       "status": "draft",
       "owner": "산업 환경 분석가",
       "file": "analysis-units/semiconductor-02-industry.md",
@@ -31,10 +43,10 @@
       "references": []
     },
     {
-      "id": "markdown-03-market",
-      "level": "environment",
-      "parentId": null,
-      "title": "시장 환경 분석",
+      "id": "environment-market",
+      "level": "analysis",
+      "parentId": "environment-analysis",
+      "title": "시장",
       "status": "draft",
       "owner": "시장 환경 분석가",
       "file": "analysis-units/semiconductor-03-market.md",
@@ -43,10 +55,10 @@
       "references": []
     },
     {
-      "id": "markdown-04-technology",
-      "level": "environment",
-      "parentId": null,
-      "title": "기술 환경 분석",
+      "id": "environment-technology",
+      "level": "analysis",
+      "parentId": "environment-analysis",
+      "title": "기술",
       "status": "draft",
       "owner": "기술 환경 분석가",
       "file": "analysis-units/semiconductor-04-technology.md",
@@ -55,10 +67,10 @@
       "references": []
     },
     {
-      "id": "markdown-04-ip-rnd",
-      "level": "dataAnalysis",
+      "id": "ip-rnd-analysis",
+      "level": "phase",
       "parentId": null,
-      "title": "지재권·지원과제 교차 분석",
+      "title": "지재권*지원과제 분석",
       "status": "draft",
       "owner": "IP·중기부 지원과제 데이터 분석가",
       "file": "analysis-units/semiconductor-04-ip-rnd.md",
@@ -67,39 +79,15 @@
       "references": []
     },
     {
-      "id": "markdown-05-candidates",
-      "level": "strategy",
+      "id": "strategic-item-candidates",
+      "level": "phase",
       "parentId": null,
-      "title": "전략품목 후보군 구성",
+      "title": "전략품목 후보군 도출",
       "status": "draft",
       "owner": "전략품목 후보군 구성가",
       "file": "analysis-units/semiconductor-05-candidates.md",
       "scope": ["환경분석", "IP·지원과제 분석", "전략품목 후보", "우선순위"],
       "tags": ["전략품목", "후보군", "우선순위", "로드맵"],
-      "references": []
-    },
-    {
-      "id": "markdown-06-dashboard",
-      "level": "dashboard",
-      "parentId": null,
-      "title": "상용화 방안 및 KPI 기반 R&D Dashboard",
-      "status": "draft",
-      "owner": "상용화·KPI 대시보드 설계가",
-      "file": "analysis-units/semiconductor-06-dashboard.md",
-      "scope": ["심층분석", "시장·표준·규제·판로", "상용화 방안", "KPI Dashboard"],
-      "tags": ["상용화", "KPI", "Dashboard", "R&D"],
-      "references": []
-    },
-    {
-      "id": "roadmap",
-      "level": "dashboard",
-      "parentId": null,
-      "title": "로드맵. 반도체 분야 전략기술로드맵",
-      "status": "draft",
-      "owner": "반도체 분야 PM",
-      "file": "analysis-units/semiconductor-07-roadmap.md",
-      "scope": ["로드맵 종합", "연차별 추진계획", "전략품목", "성과관리"],
-      "tags": ["로드맵", "PM", "R&D", "중소기업"],
       "references": []
     }
   ]

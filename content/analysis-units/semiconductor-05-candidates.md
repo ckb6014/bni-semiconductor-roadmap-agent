@@ -1,11 +1,11 @@
 ---
 id: markdown-05-candidates
-title: 전략품목 후보군 구성
+title: 전략품목 후보군 도출
 owner: 전략품목 후보군 구성가
 status: draft
 ---
 
-# 전략품목 후보군 구성
+# 전략품목 후보군 도출
 
 ## 역할 정의
 
