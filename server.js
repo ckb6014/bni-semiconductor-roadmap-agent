@@ -26,6 +26,11 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
+    if ((req.method === "GET" || req.method === "HEAD") && url.pathname === "/health") {
+      sendHealth(res, req.method === "HEAD");
+      return;
+    }
+
     if (req.method === "POST" && url.pathname === "/api/gpt-search") {
       await handleGptSearch(req, res);
       return;
@@ -61,7 +66,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`Serving BNI Semiconductor Roadmap Agent at http://localhost:${port}/site/`);
+  console.log(`Serving BNI Strategy Roadmap Agent at http://localhost:${port}/site/`);
 });
 
 async function handleGptSearch(req, res) {
@@ -75,6 +80,8 @@ async function handleGptSearch(req, res) {
 
   const body = await readJson(req);
   const unit = body.unit || {};
+  const field = body.field || {};
+  const fieldLabel = String(field.label || "선택 전략분야").trim();
   const references = Array.isArray(body.references) ? body.references : [];
   const uploads = Array.isArray(body.uploads) ? body.uploads : [];
   const query = String(body.query || "").trim();
@@ -86,12 +93,13 @@ async function handleGptSearch(req, res) {
   }
 
   const prompt = [
-    "너는 중소기업 전략기술로드맵 반도체 분야 보고서를 작성하는 PM급 AI Agent다.",
+    `너는 중소기업 전략기술로드맵 ${fieldLabel} 분야 보고서를 작성하는 PM급 AI Agent다.`,
     "사용자 질문에 대해 보고서에 바로 반영 가능한 한국어 Markdown으로 답하라.",
     "분석 기간은 2024-2026년이며, 국내외 정책·산업·시장·기술·지재권·중기부 지원과제 관점을 구분한다.",
     "출처 확인이 필요한 수치, 법령명, 기업 동향, 정책 변경 사항은 '검증 필요'로 표시하라.",
     "전략품목 후보군 또는 R&D Dashboard와 연결되는 시사점은 표로 정리하라.",
     "",
+    `현재 전략분야: ${fieldLabel}`,
     `현재 분석 단위: ${unit.title || ""}`,
     `역할: ${unit.owner || ""}`,
     `분석 구분: ${unit.level || ""}`,
@@ -346,6 +354,18 @@ function extractText(data) {
 function sendJson(res, status, payload) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify(payload));
+}
+
+function sendHealth(res, headOnly) {
+  res.writeHead(200, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
+  if (headOnly) {
+    res.end();
+    return;
+  }
+  res.end(JSON.stringify({ ok: true, service: "bni-strategy-roadmap-agent", checkedAt: new Date().toISOString() }));
 }
 
 function sendText(res, status, text) {

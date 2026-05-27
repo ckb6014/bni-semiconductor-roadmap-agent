@@ -70,9 +70,32 @@ https://bni-semiconductor-roadmap-agent.onrender.com
 
 이 주소를 팀원에게 공유하면 됩니다.
 
+## 무료 플랜 상시 유지 설정
+
+무료 Web Service는 요청이 없으면 잠들 수 있으므로, 이 프로젝트에는 GitHub Actions가 10분마다 Render의 상태 확인 주소를 호출하는 워크플로가 포함되어 있습니다.
+
+```text
+https://bni-semiconductor-roadmap-agent.onrender.com/health
+```
+
+사용 방법:
+
+1. `.github/workflows/keep-render-awake.yml` 파일까지 GitHub에 commit/push합니다.
+2. GitHub 저장소의 **Actions** 탭에서 workflows가 활성화되어 있는지 확인합니다.
+3. Render 서비스 주소가 다르면 GitHub 저장소 **Settings > Secrets and variables > Actions > Variables**에 아래 변수를 추가합니다.
+
+| Name | Value |
+| --- | --- |
+| RENDER_KEEPALIVE_URL | `https://실제-render-주소.onrender.com/health` |
+
+수동으로 한 번 확인하려면 Actions 탭에서 **Keep Render Awake** workflow를 선택하고 **Run workflow**를 누르면 됩니다.
+
 ## 무료 플랜 주의사항
 
 - 무료 Web Service는 일정 시간 접속이 없으면 잠들 수 있습니다.
+- 이 프로젝트는 10분 주기 `/health` 호출로 sleep 진입을 줄이도록 설정되어 있습니다.
+- GitHub Actions 스케줄은 GitHub 사정에 따라 몇 분 지연될 수 있습니다.
+- 무료 플랜 사용량을 모두 소진하면 Render 서비스가 월초까지 정지될 수 있습니다.
 - 잠든 뒤 첫 접속은 30초 이상 걸릴 수 있습니다.
 - 업로드 파일은 Render 재시작 또는 재배포 시 사라질 수 있습니다.
 - 장기 운영에서는 S3, Google Drive, Supabase Storage 같은 외부 저장소를 붙이는 구성이 필요합니다.
